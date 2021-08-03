@@ -59,7 +59,7 @@ class CustomTextFormField extends StatelessWidget {
             return null;
           },
           decoration: InputDecoration(
-            isDense: true,
+            isDense: suffix != null ? true : false,
             errorStyle: TextStyle(
               color: errorColor,
               fontWeight: FontWeight.bold,
