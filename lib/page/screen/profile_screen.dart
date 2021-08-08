@@ -27,7 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Future<UserModel>? userFuture;
 
-  RefreshController _refreshController =
+  RefreshController _refreshControllerHistory =
+      RefreshController(initialRefresh: false);
+  RefreshController _refreshControllerUpcoming =
       RefreshController(initialRefresh: false);
 
   @override
@@ -121,22 +123,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                     headerSliverBuilder: (context, box) => [
                       _sliverAppBar(user),
                     ],
-                    body: SmartRefresher(
-                      controller: _refreshController,
-                      enablePullUp: true,
-                      enablePullDown: true,
-                      onLoading: _onLoading,
-                      onRefresh: _onRefresh,
-                      header: ClassicHeader(),
-                      footer: ClassicFooter(),
-                      child: TabBarView(
-                        physics: BouncingScrollPhysics(),
-                        controller: tabController,
-                        children: [
-                          TransactionScreen(listUpComing),
-                          TransactionScreen(listHistory),
-                        ],
-                      ),
+                    body: TabBarView(
+                      physics: BouncingScrollPhysics(),
+                      controller: tabController,
+                      children: [
+                        SmartRefresher(
+                          controller: _refreshControllerUpcoming,
+                          onLoading: _onLoading,
+                          onRefresh: _onRefresh,
+                          header: ClassicHeader(),
+                          footer: ClassicFooter(),
+                          child: TransactionScreen(listUpComing),
+                        ),
+                        SmartRefresher(
+                          controller: _refreshControllerHistory,
+                          onLoading: _onLoading,
+                          onRefresh: _onRefresh,
+                          header: ClassicHeader(),
+                          footer: ClassicFooter(),
+                          child: TransactionScreen(listHistory),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -228,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         controller: tabController,
         tabs: [
           Tab(
-            text: "Up Coming",
+            text: "In Progress",
           ),
           Tab(
             text: "History",
@@ -243,7 +250,8 @@ class _ProfileScreenState extends State<ProfileScreen>
       setState(() {
         userFuture = apiController.getUserDetail(widget.id);
       });
-      _refreshController.loadComplete();
+      _refreshControllerHistory.loadComplete();
+      _refreshControllerUpcoming.loadComplete();
     });
   }
 
@@ -252,7 +260,8 @@ class _ProfileScreenState extends State<ProfileScreen>
       setState(() {
         userFuture = apiController.getUserDetail(widget.id);
       });
-      _refreshController.refreshCompleted();
+      _refreshControllerHistory.refreshCompleted();
+      _refreshControllerUpcoming.refreshCompleted();
     });
   }
 }

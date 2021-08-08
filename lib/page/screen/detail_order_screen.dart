@@ -142,10 +142,7 @@ class _DetailOrderScreenState extends State<DetailOrderScreen> {
                               ],
                             ),
                           ),
-                          Offstage(
-                            offstage: widget.transaction.status! == 'approved',
-                            child: _confirmOrder(),
-                          ),
+                          _confirmOrder(),
                         ],
                       ),
                     ),
@@ -277,81 +274,59 @@ class _DetailOrderScreenState extends State<DetailOrderScreen> {
       ),
       child: Column(
         children: [
-          TextButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text("Apakah anda yakin ingin membatalkan pesanan"),
-                  actions: [
-                    TextButton(
-                      child: Text("Kembali"),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await EasyLoading.show(
-                          status: 'loading...',
-                          maskType: EasyLoadingMaskType.black,
-                        );
-                        Future.delayed(Duration(milliseconds: 100), () async {
-                          await apiController
-                              .deleteTransaction(widget.transaction.id!)
-                              .then((value) {
-                            Navigator.pop(context);
-                            Get.back();
+          Offstage(
+            offstage: widget.transaction.status! == 'approved',
+            child: TextButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text("Apakah anda yakin ingin membatalkan pesanan"),
+                    actions: [
+                      TextButton(
+                        child: Text("Kembali"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await EasyLoading.show(
+                            status: 'loading...',
+                            maskType: EasyLoadingMaskType.black,
+                          );
+                          Future.delayed(Duration(milliseconds: 100), () async {
+                            await apiController
+                                .deleteTransaction(widget.transaction.id!)
+                                .then((value) {
+                              Navigator.pop(context);
+                              Get.back();
+                            });
                           });
-                        });
-                      },
-                      child: Text("Batalkan"),
-                    )
-                  ],
+                        },
+                        child: Text("Batalkan"),
+                      )
+                    ],
+                  ),
+                );
+              },
+              child: Text(
+                "Batalkan transaksi ?",
+                style: TextStyle(
+                  color: SECONDARY_COLOR,
                 ),
-              );
-            },
-            child: Text(
-              "Batalkan transaksi ?",
-              style: TextStyle(
-                color: SECONDARY_COLOR,
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text("Konfirmasi transaksi"),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text("Batal"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await EasyLoading.show(
-                          status: 'loading...',
-                          maskType: EasyLoadingMaskType.black,
-                        );
-                        Future.delayed(Duration(milliseconds: 100), () async {
-                          await apiController
-                              .updateTransaction(widget.transaction.id!)
-                              .then((value) {
-                            Navigator.pop(context);
-                            showDialog(
-                              context: context,
-                              builder: (context) => _commentDialog(),
-                            );
-                          });
-                        });
-                      },
-                      child: Text("Simpan"),
-                    )
-                  ],
-                ),
-              );
-            },
-            child: Text("Konfirmasi transaksi"),
+          Offstage(
+            offstage: widget.transaction.status! == 'disapproved',
+            child: ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => _commentDialog(),
+                );
+              },
+              child: Text("Berikan komentar"),
+            ),
           ),
         ],
       ),
@@ -364,10 +339,9 @@ class _DetailOrderScreenState extends State<DetailOrderScreen> {
       title: Text("Berikan penilaian"),
       actions: [
         TextButton(
-          child: Text("Lewati"),
+          child: Text("Batal"),
           onPressed: () {
             Navigator.pop(context);
-            Get.offAll(HomePage());
           },
         ),
         ElevatedButton(

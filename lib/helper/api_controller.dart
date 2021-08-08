@@ -27,6 +27,24 @@ class ApiController extends GetxController {
   RxList<String> listUsername = <String>[].obs;
   RxBool loading = false.obs;
 
+  RxList<Transaction> listUpComing = <Transaction>[].obs;
+  RxList<Transaction> listHistory = <Transaction>[].obs;
+
+  Future getRecentTransaction(String id) async {
+    listUpComing.value = [];
+    listHistory.value = [];
+    await getUserDetail(id).then((data) {
+      data.transaction!.map((e) {
+        if (e.status == "disapproved") {
+          listUpComing.add(e);
+        } else {
+          listHistory.add(e);
+        }
+      });
+      update();
+    });
+  }
+
   Future<List<dynamic>> getListCategory() async {
     try {
       var resp = await http.post(Uri.parse("$URL/category"),
@@ -136,6 +154,7 @@ class ApiController extends GetxController {
 
       if (resp.statusCode == 200) {
         commentController.value.clear();
+        showMessage('Komentar berhasil dikirim', Colors.blue);
         return true;
       } else {
         return false;
@@ -202,26 +221,6 @@ class ApiController extends GetxController {
     } catch (e) {
       print(e);
       return false;
-    }
-  }
-
-  Future<void> updateTransaction(int id) async {
-    try {
-      var resp = await http.put(
-        Uri.parse("$URL/order/$id"),
-        body: {'status': 'approved'},
-        headers: {'Accept': 'application/json'},
-      );
-
-      if (resp.statusCode == 200) {
-        showMessage('Transaksi berhasil diperbarui', Colors.blue);
-        return Future.value();
-      } else {
-        showMessage('Gagal memperbarui data', SECONDARY_COLOR);
-        return Future.value();
-      }
-    } catch (e) {
-      return Future.error(e);
     }
   }
 

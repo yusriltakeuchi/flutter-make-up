@@ -3,7 +3,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:make_up/component/card_job.dart';
 import 'package:make_up/component/const.dart';
-import 'package:make_up/model/job_model.dart';
 import 'package:make_up/model/user_model.dart';
 import 'package:make_up/page/screen/detail_portfolio.dart';
 import 'package:url_launcher/url_launcher.dart';
