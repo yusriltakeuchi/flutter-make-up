@@ -4,7 +4,16 @@ import 'package:make_up/model/transaction_model.dart';
 
 class UserModel {
   int? id;
-  String? name, image, email, gender, phone, address, desc, status, createdAt;
+  String? name,
+      image,
+      email,
+      gender,
+      phone,
+      city,
+      address,
+      desc,
+      status,
+      createdAt;
   List<JobModel>? jobs;
   List<Portfolio>? portfolio;
   List<Transaction>? transaction;
@@ -15,6 +24,7 @@ class UserModel {
     this.image,
     this.email,
     this.gender,
+    this.city,
     this.address,
     this.desc,
     this.phone,
@@ -30,6 +40,7 @@ class UserModel {
         name: json['name'],
         image: json['image'],
         email: json['email'],
+        city: json['city'],
         phone: json['phone'],
         gender: json['gender'],
         address: json['address'],

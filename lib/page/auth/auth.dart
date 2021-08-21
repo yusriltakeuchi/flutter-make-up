@@ -12,17 +12,17 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  AuthController authController = Get.put(AuthController());
+  AuthController authController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration(milliseconds: 5500), () {
-      print(authController.authStorage.read('user'));
-      print(authController.authStorage.read('isLogin'));
       return Get.to(
         LoginPage(),
         duration: Duration(milliseconds: 2500),
       );
     });
+
     return Scaffold(
       backgroundColor: PRIMARY_COLOR,
       body: SafeArea(

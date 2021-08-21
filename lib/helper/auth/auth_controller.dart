@@ -11,6 +11,7 @@ import 'package:make_up/page/root.dart';
 
 class AuthController extends GetxController {
   GetStorage authStorage = GetStorage('authStorage');
+
   var emailController = new TextEditingController().obs;
   var phoneController = new TextEditingController().obs;
   var addressController = new TextEditingController().obs;
@@ -44,6 +45,7 @@ class AuthController extends GetxController {
     try {
       String? message;
       Color? color;
+
       var resp = await http.post(Uri.parse('$URL/login'), body: {
         'email': emailController.value.text,
         'password': passwordController.value.text,
@@ -59,10 +61,13 @@ class AuthController extends GetxController {
 
         authStorage.write('user', data);
         authStorage.write('isLogin', true);
+
         isLogin.value = true;
 
         showMessage(message, color);
+
         cleanData();
+
         await Future.delayed(
           Duration(milliseconds: 800),
           () => Get.offAll(Root()),

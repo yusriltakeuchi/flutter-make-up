@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 class ActionAuth extends StatelessWidget {
   final String hint, hintButton;
   final VoidCallback tapInkWell, tapButton;
-  ActionAuth(this.hint, {required this.hintButton, required this.tapInkWell, required this.tapButton, Key? key})
+
+  ActionAuth(this.hint,
+      {required this.hintButton,
+      required this.tapInkWell,
+      required this.tapButton,
+      Key? key})
       : super(key: key);
 
   @override

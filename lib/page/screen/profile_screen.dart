@@ -5,6 +5,7 @@ import 'package:make_up/component/custom_iconbutton.dart';
 import 'package:make_up/component/custom_linear_progress_indicator.dart';
 import 'package:make_up/helper/api_controller.dart';
 import 'package:make_up/helper/auth/auth_controller.dart';
+import 'package:make_up/helper/mixin.dart';
 import 'package:make_up/model/transaction_model.dart';
 import 'package:make_up/model/user_model.dart';
 import 'package:make_up/page/screen/transaction_screen.dart';
@@ -19,9 +20,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, CustomClass {
   ScrollController scrollController = new ScrollController();
   TabController? tabController;
+
   AuthController authController = Get.find();
   ApiController apiController = Get.find();
 
@@ -215,16 +217,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ],
               ),
             ),
-            Offstage(
-              offstage: user.data!.address == null,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.map),
-                  SizedBox(width: 5),
-                  Text(user.data!.address == null ? "" : user.data!.address!)
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.map),
+                SizedBox(width: 5),
+                Text(
+                  getAddress(user.data!.address, user.data!.city),
+                )
+              ],
             ),
           ],
         ),

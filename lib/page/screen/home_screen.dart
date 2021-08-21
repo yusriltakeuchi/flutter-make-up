@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:make_up/component/card_job.dart';
 import 'package:make_up/component/const.dart';
-import 'package:make_up/component/custom_iconbutton.dart';
 import 'package:make_up/component/custom_linear_progress_indicator.dart';
 import 'package:make_up/helper/api_controller.dart';
+import 'package:make_up/helper/mixin.dart';
 import 'package:make_up/model/job_model.dart';
 import 'package:make_up/page/search.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -17,11 +16,10 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with CustomClass {
   final ApiController apiController = Get.find();
 
-  bool showFilter = false;
-  String? filter;
+  String filter = "Latest";
   Future<List<JobModel>>? listJob;
 
   @override
@@ -60,40 +58,27 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               search(),
               _head(),
-              StreamBuilder<List<JobModel>>(
-                stream: Stream.fromFuture(apiController.listJobs()),
-                builder: (context, jobs) {
-                  if (!jobs.hasData)
-                    return CustomLinearProgressIndicator();
-                  else {
-                    List<JobModel> listFilter = [];
-
-                    for (int i = 0; i < jobs.data!.length; i++) {
-                      if (jobs.data![i].category!.name == filter) {
-                        listFilter.add(jobs.data![i]);
-                      }
-                    }
-
-                    return Column(
-                      children: showFilter
-                          ? listFilter.isEmpty
-                              ? [Center(child: Text("Data kosong"))]
-                              : listFilter
-                                  .map((e) => CardJob(
-                                        e,
-                                        imageHeight: Get.height / 2.5,
-                                      ))
-                                  .toList()
-                          : jobs.data!
-                              .map((e) => CardJob(
+              listJob == null
+                  ? Container()
+                  : StreamBuilder<List<JobModel>>(
+                      stream: Stream.fromFuture(listJob!),
+                      builder: (context, jobs) {
+                        if (!jobs.hasData)
+                          return CustomLinearProgressIndicator();
+                        else {
+                          return Column(
+                            children: sortJobs(jobs.data!, filter)
+                                .map(
+                                  (e) => CardJob(
                                     e,
                                     imageHeight: Get.height / 2.5,
-                                  ))
-                              .toList(),
-                    );
-                  }
-                },
-              )
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        }
+                      },
+                    )
             ],
           ),
         ),
@@ -139,85 +124,78 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _head() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "List Jobs",
-                style: TextStyle(
-                  fontSize: 32,
-                  color: GREY_COLOR,
-                  fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(30, 10, 30, 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "List Jobs",
+            style: TextStyle(
+              fontSize: 32,
+              color: GREY_COLOR,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: Material(
+              type: MaterialType.transparency,
+              child: PopupMenuButton(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: PRIMARY_COLOR.withOpacity(.1),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        "$filter",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon(Icons.filter_list),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuButton(
-                icon: Icon(Icons.filter_list),
                 onSelected: (val) {
                   setState(() {
-                    showFilter = true;
-                    filter = val.toString();
+                    filter = val!.toString();
+                    if (filter == 'Latest') {
+                      listJob = apiController.listJobs();
+                    }
                   });
+                  print(val);
                 },
-                itemBuilder: (context) => apiController.listCategory
-                    .map((element) => PopupMenuItem(
-                          value: element,
-                          child: Text(element),
-                        ))
-                    .toList(),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: Text("Publish (latest)"),
+                    value: 'Latest',
+                  ),
+                  PopupMenuItem(
+                    child: Text("Publish (old)"),
+                    value: 'Oldest',
+                  ),
+                  PopupMenuItem(
+                    child: Text("Rating (high)"),
+                    value: 'Top (rating)',
+                  ),
+                  PopupMenuItem(
+                    child: Text("Rating (low)"),
+                    value: 'Low (rating)',
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        Offstage(
-          offstage: !showFilter,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 5,
-              horizontal: 30,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: PRIMARY_COLOR,
-                    ),
-                    child: Text(
-                      filter ?? "",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                CustomIconButton(
-                  tooltip: "Hapus",
-                  onTap: () {
-                    setState(() {
-                      showFilter = false;
-                      filter!;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.close,
-                    color: SECONDARY_COLOR,
-                  ),
-                ),
-              ],
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 

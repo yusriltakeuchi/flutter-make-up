@@ -67,7 +67,7 @@ class ApiController extends GetxController {
           headers: {'Accept': 'application/json'});
 
       if (resp.statusCode == 200) {
-        List data = json.decode(resp.body)['data'];
+        List data = json.decode(resp.body);
         return data.map((e) => JobModel.fromJson(e)).toList();
       }
     } catch (e) {

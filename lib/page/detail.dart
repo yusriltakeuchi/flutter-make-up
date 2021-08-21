@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:make_up/component/const.dart';
-import 'package:make_up/helper/api_controller.dart';
-import 'package:make_up/helper/auth/auth_controller.dart';
+import 'package:make_up/helper/mixin.dart';
 import 'package:make_up/model/job_model.dart';
 import 'package:make_up/model/user_model.dart';
 import 'package:make_up/page/booking.dart';
@@ -23,10 +22,7 @@ class DetailPage extends StatefulWidget {
   _DetailPageState createState() => _DetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
-  final AuthController authController = Get.find();
-
-  final ApiController apiController = Get.find();
+class _DetailPageState extends State<DetailPage> with CustomClass {
   double? rating;
 
   @override
@@ -101,96 +97,112 @@ class _DetailPageState extends State<DetailPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Text("Lokasi :"),
+                            SizedBox(width: 10),
+                            Text(
+                              getAddress(widget.user.address, widget.user.city),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Text("Tersedia pada :"),
                             SizedBox(width: 10),
                             Text("${widget.job.start!} - ${widget.job.end!}")
                           ],
                         ),
                       ),
-                      Divider(
-                        thickness: 1,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              "Comment",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                      if (widget.job.comment!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Divider(
+                                thickness: 1,
                               ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            ...widget.job.comment!.map(
-                              (e) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor:
-                                          PRIMARY_COLOR.withOpacity(.18),
-                                      backgroundImage: AssetImage(
-                                          'assets/img/${e.imageAuthor}'),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                e.author!,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Flexible(
-                                                child: Text(
-                                                  e.createdAt.toString(),
+                              Text(
+                                "Comment",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              ...widget.job.comment!.map(
+                                (e) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10.0),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor:
+                                            PRIMARY_COLOR.withOpacity(.18),
+                                        backgroundImage: AssetImage(
+                                            'assets/img/${e.imageAuthor}'),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  e.author!,
                                                   style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
                                                     fontSize: 12,
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 5),
-                                          Text(
-                                            e.content == null ? "" : e.content!,
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Badge(
-                                      badgeContent: Text(
-                                        e.star.toString(),
-                                        style: TextStyle(
-                                          color: Colors.white,
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    e.createdAt.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              e.content == null
+                                                  ? ""
+                                                  : e.content!,
+                                            )
+                                          ],
                                         ),
                                       ),
-                                      child: Icon(
-                                        Icons.star,
-                                        size: 20,
+                                      Badge(
+                                        badgeContent: Text(
+                                          e.star.toString(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.star,
+                                          size: 20,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          ],
+                              )
+                            ],
+                          ),
                         ),
-                      ),
                       Divider(
                         thickness: 1,
                       ),

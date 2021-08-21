@@ -1,13 +1,15 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:make_up/component/const.dart';
 import 'package:make_up/helper/api_controller.dart';
+import 'package:make_up/helper/mixin.dart';
 import 'package:make_up/model/job_model.dart';
 import 'package:make_up/model/user_model.dart';
 import 'package:make_up/page/detail.dart';
 
-class CardJob extends StatelessWidget {
+class CardJob extends StatelessWidget with CustomClass {
   final double imageHeight;
   final JobModel job;
   final VoidCallback? onTap;
@@ -32,7 +34,6 @@ class CardJob extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
             child: InkWell(
               borderRadius: BorderRadius.circular(10),
-              // onTap: () {},
               onTap: onTap == null
                   ? () => Get.to(
                         DetailPage(
@@ -77,7 +78,7 @@ class CardJob extends StatelessWidget {
                               ),
                             ),
                             subtitle: Text(
-                              user.data!.address ?? "undefined",
+                              getAddress(user.data!.address, user.data!.city),
                             ),
                             trailing: Badge(
                               badgeContent: Text(
@@ -91,6 +92,41 @@ class CardJob extends StatelessWidget {
                               ),
                             ),
                             contentPadding: const EdgeInsets.all(0),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: RatingBar.builder(
+                                    initialRating: job.rating! == ''
+                                        ? 0.0
+                                        : double.parse(job.rating!),
+                                    minRating: 0,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: true,
+                                    ignoreGestures: true,
+                                    itemCount: 5,
+                                    itemPadding:
+                                        EdgeInsets.symmetric(horizontal: 4.0),
+                                    itemSize: 30,
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star,
+                                      color: Colors.orangeAccent,
+                                    ),
+                                    onRatingUpdate: (value) {},
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  job.rating! == '' ? '0/0' : job.rating!,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: 20),

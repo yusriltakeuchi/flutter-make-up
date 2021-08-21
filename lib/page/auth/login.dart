@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   var formKey = GlobalKey<FormState>();
 
   AuthController authController = Get.find();
+
   bool hiddenPassword = true;
 
   double _opacity = 0;
@@ -140,6 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                 tapButton: () async {
                   if (formKey.currentState!.validate()) {
                     authController.loading.value = true;
+
                     Future.delayed(Duration(seconds: 10), () async {
                       await authController.login();
                     }).then((value) {

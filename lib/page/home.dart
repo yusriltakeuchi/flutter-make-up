@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with CustomClass {
   ApiController apiController = Get.find();
   AuthController authController = Get.find();
+
   PersistentTabController? tabController;
 
   @override
