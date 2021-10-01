@@ -1,3 +1,3 @@
 # make_up
 
-Repository is up to date, please update this repo
+Repository is not up to date, please update this repo
